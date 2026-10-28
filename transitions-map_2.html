@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Learning to Work, Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4ecdc; --paper-2:#ebe0c9; --ink:#1c1a17; --ink-soft:#5b544a; --rule:#c9bb9f;
+  --tan:#e3c8a3; --mid:#bf9f74; --lost:#1c1a17; --on-lost:#f4ecdc; --other:#8a8070;
+  --card:#fbf6ea; --hl:#f2d7a6; --accent:#b5532b;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#1b1915; --paper-2:#24211c; --ink:#efe6d4; --ink-soft:#b5ab98; --rule:#4a4338;
+    --tan:#c9a676; --mid:#8f7653; --lost:#efe6d4; --on-lost:#1b1915; --other:#a59c8c; --card:#24211c; --hl:#5a4526; --accent:#e0835a;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#1b1915; --paper-2:#24211c; --ink:#efe6d4; --ink-soft:#b5ab98; --rule:#4a4338;
+  --tan:#c9a676; --mid:#8f7653; --lost:#efe6d4; --on-lost:#1b1915; --other:#a59c8c; --card:#24211c; --hl:#5a4526; --accent:#e0835a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:"EB Garamond",Georgia,serif;font-size:17px;line-height:1.4}
+body{overflow-x:hidden}
+.wrap{max-width:1400px;margin:0 auto;padding:18px 16px 40px}
+h1{font-family:"IM Fell English",Georgia,serif;font-weight:400;font-size:clamp(24px,3.2vw,40px);margin:0;line-height:1.1}
+.sub{font-style:italic;color:var(--ink-soft);margin:6px 0 0;max-width:1000px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0 4px}
+.bar .sp{flex:1}
+button{font:inherit;font-size:15px;background:var(--card);color:var(--ink);border:1px solid var(--rule);border-radius:3px;padding:5px 11px;cursor:pointer}
+button:hover{border-color:var(--ink-soft)}
+button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.status{font-size:14px;color:var(--ink-soft);font-style:italic;display:flex;align-items:center;gap:6px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--other);display:inline-block;flex:none}
+.dot.live{background:#3f9a4a;animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,154,74,.55)}70%{box-shadow:0 0 0 8px rgba(63,154,74,0)}100%{box-shadow:0 0 0 0 rgba(63,154,74,0)}}
+.demo-badge{background:#c58b22;color:#fff;font-size:12px;padding:2px 7px;border-radius:2px;font-style:normal;letter-spacing:.05em}
+
+.spot{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:12px 0;margin:8px 0 14px;min-height:96px}
+.spot blockquote{margin:0;font-family:"IM Fell English",serif;font-size:clamp(20px,2.3vw,30px);line-height:1.25;transition:opacity .35s}
+.spot .who{display:block;font-family:"EB Garamond",serif;font-style:italic;font-size:15px;color:var(--ink-soft);margin-top:6px}
+.spot .ctl{display:flex;gap:6px}
+.spot .ctl button{padding:4px 10px}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:20px;align-items:start}
+@media (max-width:1050px){.grid{grid-template-columns:1fr}}
+.flowbox{overflow-x:auto}
+svg{display:block;width:100%;height:auto}
+@media (max-width:700px){#flow{min-width:760px}}
+.colh{font-family:"IM Fell English",serif;font-size:17px;fill:var(--ink)}
+.coln{font-family:"IM Fell English",serif;font-style:italic;font-size:13px;fill:var(--ink-soft)}
+.blab{font-family:"IM Fell English",serif;font-size:13.5px;pointer-events:none}
+.band{cursor:pointer;stroke:var(--paper);stroke-width:1}
+.band.sel{stroke:var(--accent);stroke-width:2}
+.band.grow{animation:grow 1.6s ease-out}
+@keyframes grow{0%{filter:brightness(1.25) drop-shadow(0 0 6px var(--accent))}100%{filter:none}}
+.axis{stroke:var(--ink-soft);stroke-width:.6}
+.guide{stroke:var(--ink-soft);stroke-width:.6;stroke-dasharray:2 5;opacity:.5}
+.note{font-family:"IM Fell English",serif;font-style:italic;font-size:14px;fill:var(--ink)}
+.num{font-family:"IM Fell English",serif;font-size:13px;fill:var(--ink-soft)}
+.key{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft);margin:6px 0 0}
+.key span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:22px;height:10px;display:inline-block}
+
+aside section{background:var(--card);border:1px solid var(--rule);padding:12px 14px;margin-bottom:14px}
+aside h2{font-family:"IM Fell English",serif;font-weight:400;font-size:20px;margin:0 0 8px;border-bottom:1px solid var(--rule);padding-bottom:4px}
+.prompt{margin:10px 0;padding-left:12px;border-left:3px solid var(--accent);font-size:16.5px}
+.prompt small{display:block;color:var(--ink-soft);font-style:italic;font-size:13px}
+.empty{color:var(--ink-soft);font-style:italic;font-size:15px}
+.trow{display:grid;grid-template-columns:1fr auto;gap:2px 8px;font-size:15px;margin:6px 0;cursor:pointer;padding:2px 4px}
+.trow.on{background:var(--hl)}
+.spark{display:flex;gap:3px;align-items:flex-end;height:18px}
+.spark i{width:10px;background:var(--ink);display:block}
+.quote{border-left:3px solid var(--other);padding:4px 0 4px 10px;margin:8px 0;font-size:15.5px}
+.quote .meta{font-size:13px;color:var(--ink-soft);font-style:italic}
+.quote.flash{animation:flash 2.5s}
+@keyframes flash{0%{background:var(--hl)}100%{background:transparent}}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.tabs button{font-size:13px;padding:3px 8px}
+.feed{max-height:460px;overflow:auto}
+.ctx{font-size:15px}
+.ctx .cbar{height:8px;background:var(--paper-2);margin:2px 0 7px;position:relative}
+.ctx .cbar i{position:absolute;inset:0 auto 0 0;background:var(--ink)}
+.insight{margin:8px 0}
+.insight b{font-family:"IM Fell English",serif;font-weight:400;font-size:17px;display:block}
+.card{position:fixed;z-index:20;max-width:380px;background:var(--card);border:1px solid var(--ink-soft);padding:10px 12px;box-shadow:0 6px 24px rgba(0,0,0,.18);font-size:15px;display:none}
+.card h3{font-family:"IM Fell English",serif;font-weight:400;margin:0 0 4px;font-size:18px}
+.card .meta{font-size:13px;color:var(--ink-soft);font-style:italic}
+.card p{margin:4px 0}
+footer{font-size:13px;color:var(--ink-soft);margin-top:14px;font-style:italic}
+body.present .wrap{max-width:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>What this room knows about learning and work</h1>
+  <p class="sub">Each band is a theme from the survey. Its width is how many answers mention it, question by question, from how we learn to what post-K12 should look like. <b style="font-style:normal">Tan</b> themes carry through to our picture of post-K12; <b style="font-style:normal">black</b> ones fade before they get there.</p>
+</header>
+<div class="bar">
+  <span class="status"><span class="dot" id="dot"></span><span id="statusText">Starting…</span></span>
+  <span class="sp"></span>
+  <button id="btnPresent" title="Fullscreen for screen-sharing">Present</button>
+</div>
+
+<div class="spot" aria-live="polite">
+  <blockquote id="spotQ"><span class="empty">Quotes from the room will appear here.</span></blockquote>
+  <div class="ctl">
+    <button id="spPrev" aria-label="Previous quote">‹</button>
+    <button id="spPause" aria-label="Pause rotation" aria-pressed="false">❚❚</button>
+    <button id="spNext" aria-label="Next quote">›</button>
+  </div>
+</div>
+
+<div class="grid">
+  <div>
+    <div class="flowbox"><svg id="flow" viewBox="0 0 1200 540" role="img" aria-label="Themes from survey answers flowing across the four questions"></svg></div>
+    <div class="key">
+      <span><i class="sw" style="background:var(--tan)"></i>carries into post-K12</span>
+      <span><i class="sw" style="background:var(--mid)"></i>thins out</span>
+      <span><i class="sw" style="background:var(--lost)"></i>lost before post-K12</span>
+      <span><i class="sw" style="background:var(--other);opacity:.5"></i>other / unthemed</span>
+      <span style="font-style:italic">Hover a band for the quotes behind it; click to filter.</span>
+    </div>
+    <svg id="pulse" viewBox="0 0 1200 150" role="img" aria-label="Responses over time" style="margin-top:14px"></svg>
+    <div class="key" id="grpLegend"></div>
+  </div>
+  <aside>
+    <section><h2>What to talk about</h2><div id="prompts"><p class="empty">Prompts appear once a few responses are in.</p></div></section>
+    <section id="insSec" hidden><h2>Readings &amp; patterns</h2><div id="insights"></div></section>
+    <section><h2>Themes by question</h2><div id="themes"><p class="empty">Waiting for responses…</p></div></section>
+    <section><h2>Voices</h2><div class="tabs" id="qtabs"></div><div class="feed" id="feed"></div></section>
+    <section class="ctx"><h2>For context</h2>
+      <div>Of every 100 U.S. ninth-graders, roughly:</div>
+      <div>87 graduate high school on time</div><div class="cbar"><i style="width:87%"></i></div>
+      <div>54 enroll in college the next fall</div><div class="cbar"><i style="width:54%"></i></div>
+      <div>32 earn a college credential within six years</div><div class="cbar"><i style="width:32%"></i></div>
+      <div>68 reach the workforce without one</div><div class="cbar"><i style="width:68%"></i></div>
+      <div style="font-size:13px;color:var(--ink-soft);font-style:italic">At high-poverty high schools, about 25 of 100 graduates finish a degree within six years.</div>
+    </section>
+  </aside>
+</div>
+<footer>Themes are matched by keyword, so read them as a first pass rather than a coding of the answers. Context figures are rounded national approximations (NCES; National Student Clearinghouse). Form layout after C. J. Minard's 1869 flow map of Napoleon's Russian campaign.</footer>
+</div>
+<div class="card" id="card"></div>
+
+<script>
+(()=>{
+"use strict";
+/* ===== Response sheet — change SHEET_ID to point at a different form's response sheet ===== */
+const SHEET_ID="12O50Kkw1B6QJM2_v9ZE4UrLJX229J3TBphEfUkojZdA";
+const SHEET_TAB="";   // blank = first tab (where Google Forms writes responses)
+const POLL_MS=15000;
+
+const NS="http://www.w3.org/2000/svg";
+const $=s=>document.querySelector(s);
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,cls,extra={}){const t=el("text",{x,y,class:cls,...extra},parent);t.textContent=s;return t}
+
+/* ===== the four columns, in life order ===== */
+const COLS=[
+ {id:"learn", short:"How we learn",               re:/how (do |did )?(you |people )?(best )?learn|learn best|best way to learn/},
+ {id:"job",   short:"What first jobs taught",     re:/job|work(ed)? experience/},
+ {id:"hire",  short:"What we hire for",           re:/hire|hiring|characteristic|look for/},
+ {id:"future",short:"What post-K12 should look like",re:/post-?k-?12|post-?secondary|education (should )?look like|future of/}
+];
+const CX=[175,455,735,1015];
+
+/* ===== themes (keyword-matched, first pass) ===== */
+const THEMES=[
+ ["ethic","Work ethic & showing up",["hard work","work ethic","show up","showing up","on time","reliab","dependab","responsib","discipline","punctual","commitment","no job was too","value of work"]],
+ ["solve","Problem solving",["problem solv","solve","critical think","figure out","figure it out","figure things out","resourceful","troubleshoot"]],
+ ["people","Communication & people skills",["communicat","listen","read people","reading people","teamwork","team player","team","people skills","customer","empathy","kind","respect"]],
+ ["curious","Curiosity & adaptability",["curio","ask good questions","asks good questions","questions","eager to learn","willing to learn","growth mindset","adaptab","open-minded","open minded","coachable","initiative"]],
+ ["grit","Resilience & grit",["resilien","grit","persever","persist","pressure","patience","humility","humble","failure","fail","keep going","excuses","tough"]],
+ ["doing","Learning by doing",["by doing","hands-on","hands on","doing it","practice","practicing","trial and error","project","experiment","real work","on the job","on-the-job","experience"]],
+ ["social","Learning with others",["dialogue","conversation","discuss","talking","talk it through","teaching others","teach others","peers","with others","together","collaborat"]],
+ ["mentor","Mentors & feedback",["mentor","coach","feedback","role model","watching","observ","apprentice to"]],
+ ["wil","Work-integrated education",["apprentic","internship","intern","work-based","work based","earn and learn","earn while","earn-and-learn","co-op","like work","employer","on-the-job training","real projects","paid"]],
+ ["flex","Flexible, shorter, cheaper paths",["flexib","stackab","modular","shorter","short-term","cheap","afford","free","cost","debt","certificate","micro","seat time"]],
+ ["record","Skills that get recognized",["record of skills","skills record","portfolio","credit for","competenc","show employers","badge","transcript","recogni","credential"]],
+ ["purpose","Purpose & relevance",["purpose","relevan","meaning","passion","interest","motivat","choice","personaliz","agency"]],
+ ["paths","More than one path",["only path","not the only","college for all","alternative","many paths","multiple paths","pathways","trades","options"]]
+].map(([id,name,kw])=>({id,name,re:kw.map(k=>new RegExp("(^|[^a-z])"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i"))}));
+const OTHER={id:"other",name:"Other / unthemed"};
+const ALLT=[...THEMES,OTHER];
+const tById=Object.fromEntries(ALLT.map(t=>[t.id,t]));
+function themesOf(text){if(!text||!text.trim())return[];const h=THEMES.filter(t=>t.re.some(r=>r.test(text))).map(t=>t.id);return h.length?h:["other"]}
+
+/* ===== groups (age, or location if the form asks it) ===== */
+const AGE_COLORS=["#c58b22","#b5532b","#8e3b5e","#2f5d8a","#4c7a3a"];
+let grpKind="none";
+function ageBucket(v){const m=(v||"").match(/\d+/);if(!m)return -1;let n=+m[0];if(/under|less|younger|below/i.test(v))n-=1;if(/over|older|above|\+/i.test(v))n+=1;return n<18?0:n<25?1:n<35?2:n<50?3:4}
+function groupOf(v){v=(v||"").trim();
+  if(grpKind==="age"){if(!v)return{label:"Age not given",color:"var(--other)",order:99,b:-1};const b=ageBucket(v);return{label:v,color:b<0?"var(--other)":AGE_COLORS[b],order:b<0?98:b,b}}
+  if(grpKind==="loc"){const l=v.toLowerCase();const k=/phoenix|pesc|in[- ]?person/.test(l)?0:/zoom|online|virtual/.test(l)?1:/getting ?smart|town/.test(l)?2:3;
+    return{label:v||"Unspecified",color:["#b5532b","#2f5d8a","#4c7a3a","var(--other)"][k],order:k,b:-1}}
+  return{label:"",color:"var(--ink-soft)",order:0,b:-1}}
+
+/* ===== state ===== */
+let responses=[], qLabels=[], colQ=[null,null,null,null], insights=[], seen=new Set(), firstLoad=true, selTheme=null, qFilter=-1;
+let pollTimer=null, demoTimer=null;
+
+/* ===== CSV / sheet reading ===== */
+let jsonpN=0;
+function sheetRows(sheet,tab){return new Promise((resolve,reject)=>{
+  const m=sheet.match(/\/d\/([a-zA-Z0-9-_]+)/);const id=m?m[1]:sheet.trim();
+  const cb="__sheetcb"+(++jsonpN);const sc=document.createElement("script");
+  const done=()=>{delete window[cb];sc.remove();clearTimeout(to)};
+  const to=setTimeout(()=>{done();reject(new Error("timed out"))},12000);
+  window[cb]=res=>{done();
+    if(!res||res.status==="error"){reject(new Error("sheet error"));return}
+    const t=res.table;const head=t.cols.map(c=>c.label||"");
+    const body=(t.rows||[]).map(r=>t.cols.map((c,i)=>{const v=r.c&&r.c[i];if(!v)return"";return String(v.f!=null?v.f:(v.v==null?"":v.v))}));
+    resolve([head,...body])};
+  sc.onerror=()=>{done();reject(new Error("couldn't load sheet — is it shared 'Anyone with the link'?"))};
+  sc.src=`https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json;responseHandler:${cb}&headers=1${tab?"&sheet="+encodeURIComponent(tab):""}&_t=${Date.now()}`;
+  document.head.appendChild(sc)})}
+function parseTime(s){if(!s)return null;const m=s.match(/(\d+)\/(\d+)\/(\d+)\s+(\d+):(\d+):?(\d+)?/);if(m)return new Date(+m[3],m[1]-1,+m[2],+m[4],+m[5],+(m[6]||0));const d=new Date(s);return isNaN(d)?null:d}
+
+/* ===== ingest ===== */
+function ingest(rows){
+  if(!rows.length)return;
+  const H=rows[0].map(h=>h.trim());
+  let ts=-1,age=-1,loc=-1,ins=-1;const qs=[];
+  H.forEach((h,i)=>{const l=h.toLowerCase();
+    if(ts<0&&/timestamp|submitted/.test(l))ts=i;
+    else if(age<0&&/how old|\bage\b|age range|age group/.test(l))age=i;
+    else if(loc<0&&/joining|where are you|location/.test(l))loc=i;
+    else if(/email|^(your )?name$|^score$/.test(l)){}            // never shown
+    else if(ins<0&&/^insights?$/.test(l))ins=i;
+    else if(h)qs.push(i)});
+  qLabels=qs.map(i=>H[i]);
+  grpKind=age>=0?"age":loc>=0?"loc":"none";const gcol=age>=0?age:loc;
+  colQ=[null,null,null,null];const used=new Set();
+  qLabels.forEach((l,qi)=>{const ci=COLS.findIndex((c,k)=>colQ[k]==null&&c.re.test(l.toLowerCase()));if(ci>=0){colQ[ci]=qi;used.add(qi)}});
+  qLabels.forEach((l,qi)=>{if(used.has(qi))return;const ci=colQ.findIndex(v=>v==null);if(ci>=0){colQ[ci]=qi;used.add(qi)}});
+  const fresh=[];
+  responses=rows.slice(1).map((row,ri)=>{
+    const key=(row[ts]||"")+"|"+ri;const g=groupOf(gcol>=0?row[gcol]:"");
+    const r={key,t:parseTime(row[ts]),grp:g.label,color:g.color,order:g.order,bucket:g.b,answers:qs.map(i=>(row[i]||"").trim())};
+    r.themes=r.answers.map(themesOf);
+    if(!seen.has(key)){seen.add(key);if(!firstLoad){r._new=true;fresh.push(r)}}
+    return r}).filter(r=>r.answers.some(a=>a));
+  if(ins>=0){insights=rows.slice(1).map(r=>(r[ins]||"").trim()).filter(Boolean).map(t=>{const p=t.split(/\s[—–-]\s|:\s/);return{headline:p[0],detail:p.slice(1).join(" — ")}})}
+  firstLoad=false;
+  fresh.forEach(r=>{const q=pickQuote(r,selTheme);if(q)spot.unshift(q)});
+  renderAll(fresh);
+  if(fresh.length&&spot.length){spotIdx=0;showSpot()}
+}
+
+/* ===== flow (streams) ===== */
+const flow=$("#flow");let prevGeom={},anim=null;
+function counts(){
+  const c={};ALLT.forEach(t=>c[t.id]=[0,0,0,0]);const n=[0,0,0,0];
+  responses.forEach(r=>colQ.forEach((qi,ci)=>{if(qi==null)return;const a=r.answers[qi];if(!a)return;n[ci]++;r.themes[qi].forEach(id=>c[id][ci]++)}));
+  return{c,n}}
+function klass(v){const prior=Math.max(v[0],v[1],v[2]);if(!prior)return"tan";const r=v[3]/prior;return r>=.6?"tan":r<.3?"lost":"mid"}
+function geometry(){
+  const {c,n}=counts();
+  const live=ALLT.filter(t=>c[t.id].some(x=>x));
+  // carried themes on top; lost ones sink to the bottom, like Minard's retreat
+  const ratio=id=>c[id][3]/Math.max(1,Math.max(...c[id].slice(0,3)));
+  live.sort((a,b)=>{if(a.id==="other")return 1;if(b.id==="other")return -1;
+    return ratio(b.id)-ratio(a.id)||(c[b.id].reduce((x,y)=>x+y)-c[a.id].reduce((x,y)=>x+y))});
+  const gap=4, top=96, avail=390;
+  const stack=[0,1,2,3].map(ci=>live.reduce((s,t)=>s+c[t.id][ci],0));
+  const gaps=[0,1,2,3].map(ci=>Math.max(0,live.filter(t=>c[t.id][ci]).length-1));
+  const u=Math.min(26,...[0,1,2,3].map(ci=>stack[ci]?(avail-gaps[ci]*gap)/stack[ci]:99));
+  const g={};
+  [0,1,2,3].forEach(ci=>{
+    const h=stack[ci]*u+gaps[ci]*gap;let y=top+(avail-h)/2;
+    live.forEach(t=>{const v=c[t.id][ci];g[t.id]=g[t.id]||{yT:[],yB:[],v:c[t.id],cls:t.id==="other"?"other":klass(c[t.id])};
+      g[t.id].yT[ci]=y;y+=v*u;g[t.id].yB[ci]=y;if(v)y+=gap})});
+  return{g,n,u,order:live.map(t=>t.id)}}
+function bandPath(yT,yB){
+  const x0=CX[0]-95,x3=CX[3]+95;let d=`M${x0} ${yT[0]} L${CX[0]} ${yT[0]}`;
+  for(let i=0;i<3;i++){const m=(CX[i]+CX[i+1])/2;d+=` C${m} ${yT[i]} ${m} ${yT[i+1]} ${CX[i+1]} ${yT[i+1]}`}
+  d+=` L${x3} ${yT[3]} L${x3} ${yB[3]} L${CX[3]} ${yB[3]}`;
+  for(let i=3;i>0;i--){const m=(CX[i]+CX[i-1])/2;d+=` C${m} ${yB[i]} ${m} ${yB[i-1]} ${CX[i-1]} ${yB[i-1]}`}
+  return d+` L${x0} ${yB[0]} Z`}
+const FILL={tan:"var(--tan)",mid:"var(--mid)",lost:"var(--lost)",other:"var(--other)"};
+const TXT={tan:"var(--ink)",mid:"var(--ink)",lost:"var(--on-lost)",other:"var(--paper)"};
+function renderFlow(fresh){
+  const G=geometry();
+  const grown=new Set();(fresh||[]).forEach(r=>colQ.forEach(qi=>{if(qi!=null)r.themes[qi].forEach(id=>grown.add(id))}));
+  const from={};G.order.forEach(id=>{const p=prevGeom[id],t=G.g[id];
+    from[id]=p?{yT:p.yT.slice(),yB:p.yB.slice()}:{yT:t.yT.map((y,i)=>(y+t.yB[i])/2),yB:t.yT.map((y,i)=>(y+t.yB[i])/2)}});
+  const draw=k=>{
+    flow.innerHTML="";
+    CX.forEach((x,ci)=>{el("line",{x1:x,y1:62,x2:x,y2:500,class:"guide"},flow);
+      const q=colQ[ci];txt(flow,x,30,COLS[ci].short,"colh",{"text-anchor":"middle"});
+      txt(flow,x,50,q==null?"(no question)":`Q${q+1} · ${G.n[ci]} answer${G.n[ci]===1?"":"s"}`,"coln",{"text-anchor":"middle"})});
+    if(!G.order.length){txt(flow,600,280,"Bands appear as answers arrive.","note",{"text-anchor":"middle"});return}
+    G.order.forEach(id=>{const t=G.g[id],f=from[id];
+      const yT=t.yT.map((y,i)=>f.yT[i]+(y-f.yT[i])*k), yB=t.yB.map((y,i)=>f.yB[i]+(y-f.yB[i])*k);
+      const p=el("path",{d:bandPath(yT,yB),class:"band"+(selTheme===id?" sel":"")+(k===1&&grown.has(id)?" grow":""),fill:FILL[t.cls],"fill-opacity":t.cls==="other"?.45:(selTheme&&selTheme!==id?.35:1),tabindex:0},flow);
+      p.addEventListener("mousemove",e=>showCard(e,id));p.addEventListener("mouseleave",hideCard);
+      p.addEventListener("focus",e=>showCard(e,id));p.addEventListener("blur",hideCard);
+      p.addEventListener("click",()=>{selTheme=selTheme===id?null:id;renderAll();refreshSpot()});
+      if(k===1){let bi=0;t.v.forEach((v,i)=>{if(v>t.v[bi])bi=i});const w=yB[bi]-yT[bi];
+        if(w>=14){const lx=bi===0?CX[0]-88:bi===3?CX[3]+88:CX[bi], an=bi===0?"start":bi===3?"end":"middle";
+          txt(flow,lx,(yT[bi]+yB[bi])/2+4.5,`${tById[id].name} · ${t.v[bi]}`,"blab",{"text-anchor":an,fill:TXT[t.cls]})}}
+    });
+  };
+  cancelAnimationFrame(anim);const t0=performance.now(),D=850;
+  const step=now=>{const k=Math.min(1,(now-t0)/D);draw(k<1?1-Math.pow(1-k,3):1);if(k<1)anim=requestAnimationFrame(step)};
+  draw(0);anim=requestAnimationFrame(step);
+  prevGeom={};G.order.forEach(id=>prevGeom[id]={yT:G.g[id].yT.slice(),yB:G.g[id].yB.slice()});
+}
+function showCard(e,id){
+  const c=$("#card");c.innerHTML="";const {c:cnt}=counts();
+  const h=document.createElement("h3");h.textContent=tById[id].name;c.appendChild(h);
+  const m=document.createElement("div");m.className="meta";m.textContent=COLS.map((col,i)=>`${col.short}: ${cnt[id][i]}`).join(" · ");c.appendChild(m);
+  colQ.forEach((qi,ci)=>{if(qi==null)return;responses.filter(r=>r.themes[qi].includes(id)).slice(-2).forEach(r=>{
+    const p=document.createElement("p");const i=document.createElement("i");i.style.cssText="color:var(--ink-soft);font-size:13px";i.textContent=COLS[ci].short+": ";
+    p.append(i,document.createTextNode("“"+r.answers[qi]+"”"));c.appendChild(p)})});
+  c.style.display="block";
+  const x=Math.min(e.clientX+16,innerWidth-c.offsetWidth-10),y=Math.min(e.clientY+16,innerHeight-c.offsetHeight-10);
+  c.style.left=Math.max(8,x)+"px";c.style.top=Math.max(8,y)+"px"}
+function hideCard(){$("#card").style.display="none"}
+
+/* ===== discussion prompts (rule-based, from the gaps between questions) ===== */
+function renderPrompts(){
+  const box=$("#prompts");box.innerHTML="";
+  if(responses.length<3){box.innerHTML='<p class="empty">Prompts appear once a few responses are in.</p>';return}
+  const {c,n}=counts();const P=[];const used=new Set();const pct=(a,b)=>b?Math.round(100*a/b):0;
+  const th=THEMES.filter(t=>c[t.id].some(x=>x));
+  const add=(id,text,why)=>{if(used.has(id)||P.length>=4)return;used.add(id);P.push({text,why})};
+  const lname=t=>t.name.toLowerCase();
+  const fut=th.slice().sort((a,b)=>c[b.id][3]-c[a.id][3])[0];
+  if(fut&&c[fut.id][3]>=2)add(fut.id,`The room's clearest picture of post-K12 is “${lname(fut)}” (${c[fut.id][3]} of ${n[3]} answers). What's actually stopping it?`,"Most common theme in the post-K12 answers");
+  th.map(t=>{const v=c[t.id];const pi=[0,1,2].reduce((a,b)=>v[b]>v[a]?b:a,0);return{t,pi,prior:v[pi],gap:v[pi]-v[3]}})
+    .filter(x=>x.prior>=2&&x.gap>=2).sort((a,b)=>b.gap-a.gap)
+    .forEach(d=>add(d.t.id,`${d.prior} of us named “${lname(d.t)}” under ${COLS[d.pi].short.toLowerCase()}, but ${c[d.t.id][3]?"only "+c[d.t.id][3]:"no one"} put it in post-K12. Why does it fall out of the design?`,"Strong in experience, weak in the redesign"));
+  const lr=th.slice().sort((a,b)=>c[b.id][0]-c[a.id][0])[0];
+  if(lr&&c[lr.id][0]>=2)add(lr.id,`Most of us learn best through “${lname(lr)}” (${c[lr.id][0]} of ${n[0]}). How much of a ninth-grader's day looks like that?`,"Most common way people say they learn");
+  if(grpKind==="age"){const young=responses.filter(r=>r.bucket>=0&&r.bucket<=2),old=responses.filter(r=>r.bucket>=3);
+    if(young.length>=3&&old.length>=3){let best=null;th.forEach(t=>{const has=r=>r.themes.some(ts=>ts.includes(t.id));
+      const a=pct(young.filter(has).length,young.length),b=pct(old.filter(has).length,old.length);if(!best||Math.abs(a-b)>Math.abs(best.a-best.b))best={t,a,b}});
+      if(best&&Math.abs(best.a-best.b)>=25){used.delete(best.t.id);if(P.length>=4)P.pop();add(best.t.id,`${best.a}% of under-35s mention “${lname(best.t)}”, versus ${best.b}% of those 35 and over. What changed between those generations?`,"Biggest difference by age")}}}
+  const hg=th.map(t=>({t,g:c[t.id][2]-c[t.id][3]})).filter(x=>c[x.t.id][2]>=2&&x.g>=2).sort((a,b)=>b.g-a.g)[0];
+  if(hg)add(hg.t.id,`We hire for “${lname(hg.t)}” (${c[hg.t.id][2]} answers). Where in post-K12 does anyone learn it, and how would they prove it?`,"What we hire for vs. what we'd design");
+  if(!P.length){box.innerHTML='<p class="empty">No strong gaps yet. Keep the responses coming.</p>';return}
+  P.forEach(p=>{const d=document.createElement("div");d.className="prompt";d.textContent=p.text;const s=document.createElement("small");s.textContent=p.why;d.appendChild(s);box.appendChild(d)});
+}
+
+/* ===== side panels ===== */
+function renderThemes(){
+  const box=$("#themes");box.innerHTML="";const {c}=counts();
+  const th=ALLT.filter(t=>c[t.id].some(x=>x)).sort((a,b)=>c[b.id].reduce((x,y)=>x+y)-c[a.id].reduce((x,y)=>x+y));
+  if(!th.length){box.innerHTML='<p class="empty">Waiting for responses…</p>';return}
+  const max=Math.max(...th.flatMap(t=>c[t.id]));
+  const hdr=document.createElement("div");hdr.style.cssText="font-size:12.5px;color:var(--ink-soft);font-style:italic;text-align:right";hdr.textContent="learn · jobs · hire · post-K12";box.appendChild(hdr);
+  th.forEach(t=>{const d=document.createElement("div");d.className="trow"+(selTheme===t.id?" on":"");d.tabIndex=0;
+    const a=document.createElement("span");a.textContent=t.name;const sp=document.createElement("span");sp.className="spark";sp.title=COLS.map((col,i)=>`${col.short}: ${c[t.id][i]}`).join(", ");
+    c[t.id].forEach((v,i)=>{const b=document.createElement("i");b.style.height=Math.max(2,v/max*18)+"px";if(i===3)b.style.background="var(--accent)";sp.appendChild(b)});
+    d.append(a,sp);d.onclick=()=>{selTheme=selTheme===t.id?null:t.id;renderAll();refreshSpot()};d.onkeydown=e=>{if(e.key==="Enter")d.onclick()};box.appendChild(d)})}
+function renderInsights(){const sec=$("#insSec"),box=$("#insights");sec.hidden=!insights.length;box.innerHTML="";
+  insights.slice().reverse().forEach(i=>{const d=document.createElement("div");d.className="insight";const b=document.createElement("b");b.textContent=i.headline;const p=document.createElement("span");p.textContent=i.detail;d.append(b,p);box.appendChild(d)})}
+function renderFeed(){
+  const tabs=$("#qtabs");tabs.innerHTML="";
+  const mk=(lab,v)=>{const b=document.createElement("button");b.textContent=lab;b.setAttribute("aria-pressed",qFilter===v);b.onclick=()=>{qFilter=v;renderFeed()};tabs.appendChild(b)};
+  mk("All",-1);qLabels.forEach((l,i)=>mk("Q"+(i+1),i));
+  const feed=$("#feed");feed.innerHTML="";
+  const note=s=>{const h=document.createElement("p");h.style.cssText="font-size:14px;font-style:italic;margin:0 0 6px";h.textContent=s;feed.appendChild(h)};
+  if(selTheme)note(`Filtered to “${tById[selTheme].name}”. Click it again to clear.`);
+  if(qFilter>=0)note(qLabels[qFilter]);
+  let n=0;responses.slice().reverse().forEach(r=>{
+    (qFilter>=0?[qFilter]:r.answers.map((_,i)=>i)).filter(i=>r.answers[i]&&(!selTheme||r.themes[i].includes(selTheme))).forEach(i=>{
+      if(n++>120)return;const d=document.createElement("div");d.className="quote"+(r._new?" flash":"");d.style.borderLeftColor=r.color;
+      const t=document.createElement("div");t.textContent=r.answers[i];const m=document.createElement("div");m.className="meta";m.textContent=`Q${i+1}${r.grp?" · "+r.grp:""}`;d.append(t,m);feed.appendChild(d)})});
+  if(!n){const p=document.createElement("p");p.className="empty";p.textContent="No responses yet.";feed.appendChild(p)}}
+function renderPulse(){
+  const sv=$("#pulse");sv.innerHTML="";const x0=60,x1=1150,y0=34,y1=110;
+  el("line",{x1:x0,y1:y1,x2:x1,y2:y1,class:"axis"},sv);
+  txt(sv,x0,18,"Responses over time"+(grpKind==="age"?", colored by age":""),"note");
+  const pts=responses.filter(r=>r.t).sort((a,b)=>a.t-b.t);if(!pts.length)return;
+  const t0=+pts[0].t,t1=Math.max(+pts[pts.length-1].t,t0+60000)+30000,X=t=>x0+(t-t0)/(t1-t0)*(x1-x0),n=pts.length,Y=i=>y1-(i/Math.max(n,5))*(y1-y0);
+  let d=`M${x0} ${y1}`;pts.forEach((r,i)=>{d+=` L${X(+r.t)} ${Y(i)} L${X(+r.t)} ${Y(i+1)}`});
+  el("path",{d,fill:"none",stroke:"var(--ink)","stroke-width":1.4},sv);
+  pts.forEach((r,i)=>el("circle",{cx:X(+r.t),cy:Y(i+1),r:3.4,fill:r.color},sv));
+  for(let k=0;k<=4;k++){const t=t0+(t1-t0)*k/4,x=X(t);el("line",{x1:x,y1:y1,x2:x,y2:y1+5,class:"axis"},sv);txt(sv,x,y1+20,new Date(t).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}),"num",{"text-anchor":"middle"})}
+  txt(sv,x1,Math.max(14,Y(n)-8),`${n} response${n===1?"":"s"}`,"note",{"text-anchor":"end"});
+  const lg=$("#grpLegend");lg.innerHTML="";if(grpKind==="none")return;
+  const by={};responses.forEach(r=>{(by[r.grp]=by[r.grp]||{n:0,color:r.color,order:r.order}).n++});
+  Object.entries(by).sort((a,b)=>a[1].order-b[1].order).forEach(([k,v])=>{const s=document.createElement("span");const dt=document.createElement("i");dt.className="dot";dt.style.background=v.color;s.append(dt,document.createTextNode(`${k} · ${v.n}`));lg.appendChild(s)})}
+
+/* ===== spotlight ===== */
+let spot=[],spotIdx=0,spotPaused=false,spotTimer=null;
+function pickQuote(r,theme){const idx=r.answers.map((a,i)=>i).filter(i=>r.answers[i]&&r.answers[i].length>12&&(!theme||r.themes[i].includes(theme)));
+  if(!idx.length)return null;return{r,i:idx.sort((a,b)=>r.answers[b].length-r.answers[a].length)[0]}}
+function refreshSpot(){spot=[];responses.slice().reverse().forEach(r=>r.answers.forEach((a,i)=>{if(a&&a.length>12&&(!selTheme||r.themes[i].includes(selTheme)))spot.push({r,i})}));spotIdx=0;showSpot()}
+function showSpot(){const q=$("#spotQ");clearTimeout(spotTimer);
+  if(!spot.length){q.innerHTML='<span class="empty">Quotes from the room will appear here.</span>';return}
+  spotIdx=((spotIdx%spot.length)+spot.length)%spot.length;const {r,i}=spot[spotIdx];q.style.opacity=0;
+  setTimeout(()=>{q.innerHTML="";q.appendChild(document.createTextNode("“"+r.answers[i]+"”"));const w=document.createElement("span");w.className="who";
+    const ci=colQ.indexOf(i);w.textContent=`${ci>=0?COLS[ci].short:"Q"+(i+1)}${r.grp?" · "+r.grp:""}`;q.appendChild(w);q.style.opacity=1},250);
+  if(!spotPaused)spotTimer=setTimeout(()=>{spotIdx++;showSpot()},9000)}
+$("#spPrev").onclick=()=>{spotIdx--;showSpot()};$("#spNext").onclick=()=>{spotIdx++;showSpot()};
+$("#spPause").onclick=e=>{spotPaused=!spotPaused;e.currentTarget.setAttribute("aria-pressed",spotPaused);e.currentTarget.textContent=spotPaused?"▶":"❚❚";showSpot()};
+
+function renderAll(fresh){renderFlow(fresh);renderPrompts();renderThemes();renderInsights();renderFeed();renderPulse();responses.forEach(r=>delete r._new)}
+
+/* ===== polling ===== */
+function status(kind,msg){$("#dot").className="dot "+kind;const s=$("#statusText");s.innerHTML="";
+  if(kind==="demo"){const b=document.createElement("span");b.className="demo-badge";b.textContent="SAMPLE DATA";s.append(b," ")}
+  s.append(document.createTextNode(msg))}
+async function poll(){
+  const sheet=new URLSearchParams(location.search).get("sheet")||SHEET_ID;
+  try{const was=firstLoad;ingest(await sheetRows(sheet,SHEET_TAB));if(was)refreshSpot();
+    status("live",`Live · ${responses.length} response${responses.length===1?"":"s"} · updated ${new Date().toLocaleTimeString([], {hour:"numeric",minute:"2-digit",second:"2-digit"})}`)}
+  catch(e){if(!responses.length){clearInterval(pollTimer);startDemo(e.message)}else status("",`Reconnecting… (${e.message})`)}}
+
+/* ===== sample data (used only if the sheet can't be read, or with ?demo) ===== */
+const DEMO_Q=["1. What was your first, toughest job, what did you learn from it?","2. If you were to hire someone to work with you, what characteristics would you look for?","3. How do you best learn?","4. What should post-K12 education look like?"];
+const DEMO=[
+ ["Over 50","Bussing tables at 15. I learned to show up on time and read people.","Curiosity and reliability.","By doing, then reflecting.","More like work — apprenticeships and real projects."],
+ ["35-49","Summer farm work. Hard work pays off and nobody cares about your excuses.","Problem solver who communicates well.","Hands-on, with a mentor.","Flexible, stackable credentials instead of one long degree."],
+ ["25-34","Retail during the holidays — patience under pressure.","Curiosity, teamwork, and grit.","In dialogue with others.","Community college that connects directly to employers."],
+ ["Over 50","Construction labor. Respect for the trades and hard work.","Work ethic and integrity.","Trial and error.","Earn while you learn, for everyone."],
+ ["18-24","Fast food. How to keep going when it gets busy.","Someone who asks good questions.","Watching videos and practicing.","Cheaper, shorter, and tied to skills, not seat time."],
+ ["35-49","Teaching middle school my first year. I learned humility.","Problem solver, kind, adaptable.","Teaching others.","Students should leave with a record of skills they can show employers."],
+ ["25-34","Call center. Listening is a skill.","Communication and resilience.","Hands-on projects.","Less lecture, more internships."],
+ ["Over 50","Newspaper route — reliability and showing up every day.","Reliability and curiosity.","Reading, then talking it through.","College should not be the only path."],
+ ["18-24","Lifeguard. Responsibility for other people's safety.","Teamwork.","By doing.","Apprenticeship options in high school."],
+ ["35-49","Warehouse night shift. Perseverance.","Adaptable problem solver.","With a mentor who gives feedback.","Credit for experience and work."]
+];
+function startDemo(why){
+  clearTimeout(demoTimer);const H=["Timestamp",...DEMO_Q,"How old are you?"];let i=4;const base=Date.now()-9*60000;
+  const rowsAt=k=>[H,...DEMO.slice(0,k).map((d,j)=>{const t=new Date(base+j*55000);return[`${t.getMonth()+1}/${t.getDate()}/${t.getFullYear()} ${t.getHours()}:${t.getMinutes()}:00`,...d.slice(1),d[0]]})];
+  seen=new Set();firstLoad=true;ingest(rowsAt(i));refreshSpot();
+  status("demo",why?`Couldn't read the sheet (${why}). Showing sample answers.`:"Showing sample answers");
+  const step=()=>{if(i>=DEMO.length)return;i++;ingest(rowsAt(i));demoTimer=setTimeout(step,6000)};demoTimer=setTimeout(step,5000)}
+
+$("#btnPresent").onclick=()=>{document.body.classList.toggle("present");if(!document.fullscreenElement)document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.()};
+document.addEventListener("click",e=>{if(!e.target.classList.contains("band"))hideCard()});
+renderAll();status("","Connecting to the response sheet…");
+if(new URLSearchParams(location.search).has("demo"))startDemo();else{poll();pollTimer=setInterval(poll,POLL_MS)}
+})();
+</script>
+</body>
+</html>
