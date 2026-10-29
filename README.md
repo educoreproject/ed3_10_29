@@ -167,7 +167,7 @@ drifts.
 
 ### 4. Grouping answers into themes
 
-Themes are **keyword-matched, not model-classified.** There are 13 hand-written
+Themes are **keyword-matched, not model-classified.** There are 19 hand-written
 themes, each defined as a list of stems:
 
 ```js
@@ -175,8 +175,23 @@ themes, each defined as a list of stems:
   ["hard work","work ethic","show up","on time","reliab","dependab", ...]],
 ["solve", "Problem solving",
   ["problem solv","solve","critical think","figure out","resourceful", ...]],
-// …11 more
+// …17 more
 ```
+
+The lists were tuned against the 28 real responses in the current sheet: every
+answer was run through the matcher, and the stems were widened until only
+answers with no stated lesson fell through (`Milking cows`, `I don't know`).
+That took the *Other / unthemed* bucket from 39 mentions — the largest bucket,
+bigger than any real theme — down to 6. Watch for two failure modes if you edit
+them:
+
+- **Stems that are too tight.** `willing to learn` misses "Willingness to
+  learn"; `competenc` misses "Competent"; `experience` misses "Experiential";
+  `by doing` misses a bare "Doing." — which was eight Q3 answers on its own.
+- **Stems that echo the question.** `character` tagged "Characteristics and
+  skills…" as *Honesty & integrity*, because Q2 asks what characteristics you
+  look for. Matching is context-free — it can't tell a keyword in the answer
+  from the question's own vocabulary bouncing back.
 
 Each stem is compiled to `/(^|[^a-z])<stem>/i` — a cheap word-boundary check
 that still matches prefixes, so `reliab` catches *reliable*, *reliability*, and

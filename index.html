@@ -172,19 +172,25 @@ const CX=[175,455,735,1015];
 
 /* ===== themes (keyword-matched, first pass) ===== */
 const THEMES=[
- ["ethic","Work ethic & showing up",["hard work","work ethic","show up","showing up","on time","reliab","dependab","responsib","discipline","punctual","commitment","no job was too","value of work"]],
- ["solve","Problem solving",["problem solv","solve","critical think","figure out","figure it out","figure things out","resourceful","troubleshoot"]],
- ["people","Communication & people skills",["communicat","listen","read people","reading people","teamwork","team player","team","people skills","customer","empathy","kind","respect"]],
- ["curious","Curiosity & adaptability",["curio","ask good questions","asks good questions","questions","eager to learn","willing to learn","growth mindset","adaptab","open-minded","open minded","coachable","initiative"]],
- ["grit","Resilience & grit",["resilien","grit","persever","persist","pressure","patience","humility","humble","failure","fail","keep going","excuses","tough"]],
- ["doing","Learning by doing",["by doing","hands-on","hands on","doing it","practice","practicing","trial and error","project","experiment","real work","on the job","on-the-job","experience"]],
- ["social","Learning with others",["dialogue","conversation","discuss","talking","talk it through","teaching others","teach others","peers","with others","together","collaborat"]],
- ["mentor","Mentors & feedback",["mentor","coach","feedback","role model","watching","observ","apprentice to"]],
- ["wil","Work-integrated education",["apprentic","internship","intern","work-based","work based","earn and learn","earn while","earn-and-learn","co-op","like work","employer","on-the-job training","real projects","paid"]],
- ["flex","Flexible, shorter, cheaper paths",["flexib","stackab","modular","shorter","short-term","cheap","afford","free","cost","debt","certificate","micro","seat time"]],
- ["record","Skills that get recognized",["record of skills","skills record","portfolio","credit for","competenc","show employers","badge","transcript","recogni","credential"]],
- ["purpose","Purpose & relevance",["purpose","relevan","meaning","passion","interest","motivat","choice","personaliz","agency"]],
- ["paths","More than one path",["only path","not the only","college for all","alternative","many paths","multiple paths","pathways","trades","options"]]
+ ["ethic","Work ethic & pride in the work",["hard work","work ethic","show up","showing up","on time","reliab","dependab","responsib","discipline","punctual","commitment","no job was too","value of work","value of manual","satisfaction","pride","proud","well completed","well done","job well","craftsman","quality work","energetic","work fast","diligen"]],
+ ["solve","Problem solving",["problem solv","solve","critical think","figure out","figure it out","figure things out","resourceful","troubleshoot","decision","decide","judgment","research","analy","process, absorb"]],
+ ["people","Communication & people skills",["communicat","listen","read people","reading people","teamwork","team player","team","people skills","customer","empathy","kind","respect","relationship","connector","interpersonal"]],
+ ["curious","Curiosity & adaptability",["curio","ask good questions","asks good questions","questions","eager to learn","eager learn","willing to learn","willingness","want to learn","wanting to learn","growth mindset","adaptab","open-minded","open minded","open to new","new ideas","coachable","initiative","explor","entrepreneur","risk-tak","risk tak"]],
+ ["grit","Resilience & grit",["resilien","grit","persever","persist","pressure","patience","humility","humble","failure","fail","keep going","excuses","tough","grace","setback","struggle"]],
+ ["doing","Learning by doing",["by doing","hands-on","hands on","doing","practice","practicing","trial and error","project","experiment","experient","real work","on the job","on-the-job","experience","action","apply","applied","building","make things"]],
+ ["social","Learning with others",["dialogue","conversation","discuss","talking","talk it through","teaching","teach others","peers","with others","together","collaborat","in person","humans","from people"]],
+ ["mentor","Mentors & feedback",["mentor","coach","feedback","role model","watching","observ","apprentice to","guidance","shadow"]],
+ ["wil","Work-integrated education",["apprentic","internship","intern","work-based","work based","earn and learn","earn while","earn-and-learn","co-op","like work","employer","on-the-job training","real projects","paid apprentic","paid intern","paid work","integrated","practical","wage"]],
+ ["flex","Flexible, shorter, cheaper paths",["flexib","stackab","modular","shorter","short-term","cheap","afford","free","cost","debt","certificate","micro","seat time","self-paced","self paced"]],
+ ["record","Skills that get recognized",["record of skills","skills record","portfolio","credit for","competen","show employers","badge","transcript","recogni","credential","skills based","skills-based","skill based","skill set","prove","proof"]],
+ ["purpose","Purpose & relevance",["purpose","relevan","meaning","passion","interest","motivat","choice","personaliz","agency","varied","individual","based on individual"]],
+ ["paths","More than one path",["only path","not the only","college for all","alternative","many paths","multiple paths","pathways","trades","options","vocational","not just","beyond high school"]],
+ ["honest","Honesty & integrity",["honest","integrity","truth","trust","good character","positive character","strong character","ethical","sincere","authentic","transparen"]],
+ ["modality","Reading, watching, listening",["visual","reading","watch","video","listen","hearing","audio","notes","repetition","repeat","sensory","lecture","seeing","demonstrat","summariz"]],
+ ["reality","The hard realities of work",["layoff","laid off","fired","boring","bored","drudgery","harsh","monoton","tedious","grind","minimum wage","exhaust","burnout","burn out","dead end","stand around","realities","reality"]],
+ ["self","Self-knowledge & speaking up",["not good at","was not good","wasn't good","ask for what","speak up","advocate","know yourself","knowing myself","self-aware","self aware","strengths","not for me"]],
+ ["access","Access for everyone",["access","anyone","everyone","equit","barrier","open to all","for all","inclusive","available to"]],
+ ["lifelong","Learning never stops",["lifelong","life-long","always be learning","always learning","never stop","continuous","keep learning","ongoing","throughout life"]]
 ].map(([id,name,kw])=>({id,name,re:kw.map(k=>new RegExp("(^|[^a-z])"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i"))}));
 const OTHER={id:"other",name:"Other / unthemed"};
 const ALLT=[...THEMES,OTHER];
